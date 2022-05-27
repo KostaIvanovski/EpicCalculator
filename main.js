@@ -1,3 +1,13 @@
+//TODO: Make delete button functional with the calculating operations
+//TODO: Make it so whenever you press another operation whenever 2 different numbers are already to be calculated,
+// the rezult of those numbers should be automatically calculated and added for the next calculation
+// for the operation that has been selected (e.g. 2+3-1 should be turned to 5 whenever - is pressed)
+// display also needs to be changed accordingly
+//TODO: Maybe remove the = from the display (depends)
+//TODO: Make Pow button functional
+//TODO: Make Root button functional
+//TODO: Test out more examples
+
 // Elements
 const buttons = document.querySelectorAll("#buttonsContainer > button");
 const displayTop = document.querySelector("#displayTop");
