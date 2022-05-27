@@ -8,7 +8,9 @@ let firstNumber = "";
 let secondNumber = "";
 let operationType = "";
 let isOperationActive = false;
-let rezult = null;
+let isSameOperation = false;
+let result = null;
+let previousResult = null;
 
 buttons.forEach((button) => {
   button.addEventListener("click", (e) => {
@@ -22,23 +24,33 @@ buttons.forEach((button) => {
 
     if (id === "equals") {
       calculate();
-      displayRezult();
-      firstNumber = rezult;
-      secondNumber = rezult;
+      displayResult();
+      firstNumber = result;
+      secondNumber = result;
+      isSameOperation = true;
+      previousResult = result;
     }
   });
 });
 
 function calculate() {
-  if (operationType === "add") rezult = add(parseFloat(firstNumber), parseFloat(secondNumber));
-  if (operationType === "subtract") rezult = subtract(parseFloat(firstNumber), parseFloat(secondNumber));
-  if (operationType === "multiply") rezult = multiply(parseFloat(firstNumber), parseFloat(secondNumber));
-  if (operationType === "divide") rezult = divide(parseFloat(firstNumber), parseFloat(secondNumber));
+  if (operationType === "add") result = add(parseFloat(firstNumber), parseFloat(secondNumber));
+  if (operationType === "subtract") result = subtract(parseFloat(firstNumber), parseFloat(secondNumber));
+  if (operationType === "multiply") result = multiply(parseFloat(firstNumber), parseFloat(secondNumber));
+  if (operationType === "divide") result = divide(parseFloat(firstNumber), parseFloat(secondNumber));
 }
 
-function displayRezult() {
-  displayTop.innerText = displayBottom.innerText;
-  displayBottom.innerText = `=${rezult}`;
+function displayResult() {
+  if (isSameOperation) {
+    if (operationType === "add") displayTop.innerText = `${previousResult}+${previousResult}`;
+    if (operationType === "subtract") displayTop.innerText = `${previousResult}-${previousResult}`;
+    if (operationType === "multiply") displayTop.innerText = `${previousResult}*${previousResult}`;
+    if (operationType === "divide") displayTop.innerText = `${previousResult}/${previousResult}`;
+  } else {
+    displayTop.innerText = displayBottom.innerText;
+  }
+
+  displayBottom.innerText = `=${result}`;
 }
 
 function setupCalculationInputs(id) {
@@ -90,16 +102,19 @@ function setupCalculationInputs(id) {
   if (id === "minus") {
     operationType = "subtract";
     isOperationActive = true;
+    isSameOperation = false;
     secondNumber = "";
   }
   if (id === "star") {
     operationType = "multiply";
     isOperationActive = true;
+    isSameOperation = false;
     secondNumber = "";
   }
   if (id === "backtick") {
     operationType = "divide";
     isOperationActive = true;
+    isSameOperation = false;
     secondNumber = "";
   }
 }
@@ -181,7 +196,9 @@ function clear() {
   secondNumber = "";
   operationType = "";
   isOperationActive = false;
-  rezult = null;
+  isSameOperation = false;
+  result = null;
+  previousResult = null;
 }
 
 function erase(displayElement) {
