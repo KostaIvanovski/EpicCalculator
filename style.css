@@ -45,7 +45,7 @@ body {
     "aZero comma equals plus";
 }
 
-#buttonsContainer > button {
+#buttonsContainer > button:active {
   background: linear-gradient(lightblue, rgb(122, 122, 255));
 }
 
