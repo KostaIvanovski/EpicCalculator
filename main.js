@@ -9,6 +9,7 @@ let secondNumber = "";
 let operationType = "";
 let isOperationActive = false;
 let isSameOperation = false;
+let isFirstCalculation = true;
 let result = null;
 let previousResult = null;
 
@@ -26,7 +27,6 @@ buttons.forEach((button) => {
       calculate();
       displayResult();
       firstNumber = result;
-      secondNumber = result;
       isSameOperation = true;
       previousResult = result;
     }
@@ -38,16 +38,22 @@ function calculate() {
   if (operationType === "subtract") result = subtract(parseFloat(firstNumber), parseFloat(secondNumber));
   if (operationType === "multiply") result = multiply(parseFloat(firstNumber), parseFloat(secondNumber));
   if (operationType === "divide") result = divide(parseFloat(firstNumber), parseFloat(secondNumber));
+  isFirstCalculation = false;
 }
 
 function displayResult() {
   if (isSameOperation) {
-    if (operationType === "add") displayTop.innerText = `${previousResult}+${previousResult}`;
-    if (operationType === "subtract") displayTop.innerText = `${previousResult}-${previousResult}`;
-    if (operationType === "multiply") displayTop.innerText = `${previousResult}*${previousResult}`;
-    if (operationType === "divide") displayTop.innerText = `${previousResult}/${previousResult}`;
-  } else {
+    if (operationType === "add") displayTop.innerText = `${previousResult}+${secondNumber}`;
+    if (operationType === "subtract") displayTop.innerText = `${previousResult}-${secondNumber}`;
+    if (operationType === "multiply") displayTop.innerText = `${previousResult}*${secondNumber}`;
+    if (operationType === "divide") displayTop.innerText = `${previousResult}/${secondNumber}`;
+  } else if (isFirstCalculation) {
     displayTop.innerText = displayBottom.innerText;
+  } else {
+    if (operationType === "add") displayTop.innerText = `${firstNumber}+${secondNumber}`;
+    if (operationType === "subtract") displayTop.innerText = `${firstNumber}-${secondNumber}`;
+    if (operationType === "multiply") displayTop.innerText = `${firstNumber}*${secondNumber}`;
+    if (operationType === "divide") displayTop.innerText = `${firstNumber}/${secondNumber}`;
   }
 
   displayBottom.innerText = `=${result}`;
@@ -93,6 +99,10 @@ function setupCalculationInputs(id) {
   if (id === "zero") {
     if (!isOperationActive) firstNumber += "0";
     if (isOperationActive) secondNumber += "0";
+  }
+  if (id === "dot") {
+    if (!isOperationActive) firstNumber += ".";
+    if (isOperationActive) secondNumber += ".";
   }
   if (id === "plus") {
     operationType = "add";
