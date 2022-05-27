@@ -10,6 +10,7 @@ let operationType = "";
 let isOperationActive = false;
 let isSameOperation = false;
 let isFirstCalculation = true;
+let isFirstButtonPress = true;
 let result = null;
 let previousResult = null;
 
@@ -132,45 +133,101 @@ function setupCalculationInputs(id) {
 function displayInputs(id) {
   switch (id) {
     case "one":
+      if (isFirstButtonPress) {
+        displayBottom.innerText = "";
+        isFirstButtonPress = false;
+      }
       displayBottom.innerText += "1";
       break;
     case "two":
+      if (isFirstButtonPress) {
+        displayBottom.innerText = "";
+        isFirstButtonPress = false;
+      }
       displayBottom.innerText += "2";
       break;
     case "three":
+      if (isFirstButtonPress) {
+        displayBottom.innerText = "";
+        isFirstButtonPress = false;
+      }
       displayBottom.innerText += "3";
       break;
     case "four":
+      if (isFirstButtonPress) {
+        displayBottom.innerText = "";
+        isFirstButtonPress = false;
+      }
       displayBottom.innerText += "4";
       break;
     case "five":
+      if (isFirstButtonPress) {
+        displayBottom.innerText = "";
+        isFirstButtonPress = false;
+      }
       displayBottom.innerText += "5";
       break;
     case "six":
+      if (isFirstButtonPress) {
+        displayBottom.innerText = "";
+        isFirstButtonPress = false;
+      }
       displayBottom.innerText += "6";
       break;
     case "seven":
+      if (isFirstButtonPress) {
+        displayBottom.innerText = "";
+        isFirstButtonPress = false;
+      }
       displayBottom.innerText += "7";
       break;
     case "eight":
+      if (isFirstButtonPress) {
+        displayBottom.innerText = "";
+        isFirstButtonPress = false;
+      }
       displayBottom.innerText += "8";
       break;
     case "nine":
+      if (isFirstButtonPress) {
+        displayBottom.innerText = "";
+        isFirstButtonPress = false;
+      }
       displayBottom.innerText += "9";
       break;
     case "zero":
+      if (isFirstButtonPress) {
+        displayBottom.innerText = "";
+        isFirstButtonPress = false;
+      }
       displayBottom.innerText += "0";
       break;
     case "plus":
+      if (isFirstButtonPress) {
+        displayBottom.innerText = "";
+        isFirstButtonPress = false;
+      }
       displayBottom.innerText += "+";
       break;
     case "minus":
+      if (isFirstButtonPress) {
+        displayBottom.innerText = "";
+        isFirstButtonPress = false;
+      }
       displayBottom.innerText += "-";
       break;
     case "star":
+      if (isFirstButtonPress) {
+        displayBottom.innerText = "";
+        isFirstButtonPress = false;
+      }
       displayBottom.innerText += "*";
       break;
     case "backtick":
+      if (isFirstButtonPress) {
+        displayBottom.innerText = "";
+        isFirstButtonPress = false;
+      }
       displayBottom.innerText += "/";
       break;
     case "dot":
@@ -200,13 +257,15 @@ function divide(num1, num2) {
 
 function clear() {
   displayTop.innerText = "";
-  displayBottom.innerText = "";
+  displayBottom.innerText = "0";
 
   firstNumber = "";
   secondNumber = "";
   operationType = "";
   isOperationActive = false;
   isSameOperation = false;
+  isFirstCalculation = true;
+  isFirstButtonPress = true;
   result = null;
   previousResult = null;
 }
