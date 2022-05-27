@@ -1,23 +1,47 @@
-let buttons = document.querySelectorAll("#buttonsContainer > button");
-let displayTop = document.querySelector("#displayTop");
-let displayBot = document.querySelector("#displayBot");
+// Elements
+const buttons = document.querySelectorAll("#buttonsContainer > button");
+const displayTop = document.querySelector("#displayTop");
+const displayBottom = document.querySelector("#displayBot");
+
+// Global Variables
+let firstNumber = "";
+let secondNumber = "";
+let operationType = "";
+let isOperationActive = false;
+let rezult = null;
 
 buttons.forEach((button) => {
   button.addEventListener("click", (e) => {
     let id = e.target.id;
-    displayInput(id);
-    if (id === "delete") erase(displayBot);
-    if (id === "equals") calculateInput(id);
+
+    displayInputs(id);
+    setupCalculationInputs(id);
+
+    if (id === "delete") erase(displayBottom);
+    if (id === "clear") clear();
+
+    if (id === "equals") {
+      calculate();
+      displayRezult();
+      firstNumber = rezult;
+      secondNumber = rezult;
+    }
   });
 });
 
-let firstNumber;
-let operationType;
-let isOperationActive = false;
-let secondNumber;
-let rezult;
+function calculate() {
+  if (operationType === "add") rezult = add(parseFloat(firstNumber), parseFloat(secondNumber));
+  if (operationType === "subtract") rezult = subtract(parseFloat(firstNumber), parseFloat(secondNumber));
+  if (operationType === "multiply") rezult = multiply(parseFloat(firstNumber), parseFloat(secondNumber));
+  if (operationType === "divide") rezult = divide(parseFloat(firstNumber), parseFloat(secondNumber));
+}
 
-function calculateInput(id) {
+function displayRezult() {
+  displayTop.innerText = displayBottom.innerText;
+  displayBottom.innerText = `=${rezult}`;
+}
+
+function setupCalculationInputs(id) {
   if (id === "one") {
     if (!isOperationActive) firstNumber += "1";
     if (isOperationActive) secondNumber += "1";
@@ -54,74 +78,78 @@ function calculateInput(id) {
     if (!isOperationActive) firstNumber += "9";
     if (isOperationActive) secondNumber += "9";
   }
-  if (id === "0") {
+  if (id === "zero") {
     if (!isOperationActive) firstNumber += "0";
     if (isOperationActive) secondNumber += "0";
   }
   if (id === "plus") {
     operationType = "add";
     isOperationActive = true;
+    secondNumber = "";
   }
   if (id === "minus") {
     operationType = "subtract";
     isOperationActive = true;
+    secondNumber = "";
   }
   if (id === "star") {
     operationType = "multiply";
     isOperationActive = true;
+    secondNumber = "";
   }
   if (id === "backtick") {
     operationType = "divide";
     isOperationActive = true;
+    secondNumber = "";
   }
 }
 
-function displayInput(id) {
+function displayInputs(id) {
   switch (id) {
     case "one":
-      displayBot.innerText += "1";
+      displayBottom.innerText += "1";
       break;
     case "two":
-      displayBot.innerText += "2";
+      displayBottom.innerText += "2";
       break;
     case "three":
-      displayBot.innerText += "3";
+      displayBottom.innerText += "3";
       break;
     case "four":
-      displayBot.innerText += "4";
+      displayBottom.innerText += "4";
       break;
     case "five":
-      displayBot.innerText += "5";
+      displayBottom.innerText += "5";
       break;
     case "six":
-      displayBot.innerText += "6";
+      displayBottom.innerText += "6";
       break;
     case "seven":
-      displayBot.innerText += "7";
+      displayBottom.innerText += "7";
       break;
     case "eight":
-      displayBot.innerText += "8";
+      displayBottom.innerText += "8";
       break;
     case "nine":
-      displayBot.innerText += "9";
+      displayBottom.innerText += "9";
       break;
     case "zero":
-      displayBot.innerText += "0";
+      displayBottom.innerText += "0";
       break;
     case "plus":
-      displayBot.innerText += "+";
+      displayBottom.innerText += "+";
       break;
     case "minus":
-      displayBot.innerText += "-";
+      displayBottom.innerText += "-";
       break;
     case "star":
-      displayBot.innerText += "*";
+      displayBottom.innerText += "*";
       break;
     case "backtick":
-      displayBot.innerText += "/";
+      displayBottom.innerText += "/";
       break;
     case "dot":
-      displayBot.innerText += ".";
+      displayBottom.innerText += ".";
       break;
 
     default:
@@ -147,13 +175,15 @@ function divide(num1, num2) {
 
 function clear() {
   displayTop.innerText = "";
-  displayBot.innerText = "";
+  displayBottom.innerText = "";
+
+  firstNumber = "";
+  secondNumber = "";
+  operationType = "";
+  isOperationActive = false;
+  rezult = null;
 }
 
 function erase(displayElement) {
   displayElement.innerText = displayElement.innerText.slice(0, displayElement.innerText.length - 1);
-  firstNumber = null;
-  secondNumber = null;
-  operation = null;
-  rezult = null;
 }
