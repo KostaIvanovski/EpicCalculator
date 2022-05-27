@@ -4,6 +4,7 @@
 // for the operation that has been selected (e.g. 2+3-1 should be turned to 5 whenever - is pressed)
 // display also needs to be changed accordingly
 //TODO: Maybe remove the = from the display (depends)
+//TODO: Error handling (NaN, operations with NaN, refreshing etc.)
 //TODO: Make Pow button functional
 //TODO: Make Root button functional
 //TODO: Test out more examples
