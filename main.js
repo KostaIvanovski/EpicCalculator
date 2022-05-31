@@ -36,12 +36,12 @@ buttons.forEach((button) => {
       displayResult();
       reArrange();
       displayInputs(id);
-      identifyInputs(id);
+      setupInputsForCalculation(id);
       return;
     }
 
     displayInputs(id);
-    identifyInputs(id);
+    setupInputsForCalculation(id);
     if (id === "delete") erase();
     if (id === "clear") clear();
     if (id === "equals") {
@@ -91,7 +91,7 @@ function displayResult() {
   displayBottom.innerText = `=${result}`;
 }
 
-function identifyInputs(id) {
+function setupInputsForCalculation(id) {
   if (id === "one") {
     if (!isOperationActive) firstNumber += "1";
     if (isOperationActive) secondNumber += "1";
