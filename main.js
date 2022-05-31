@@ -1,7 +1,3 @@
-//TODO: Maybe remove the = from the display (depends)
-//TODO: Error handling (NaN, operations with NaN, refreshing etc.)
-//TODO: Test out more examples
-
 // Elements
 const buttons = document.querySelectorAll("#buttonsContainer > button");
 const displayTop = document.querySelector("#displayTop");
@@ -88,7 +84,7 @@ function displayResult() {
     if (operationType === "power") displayTop.innerText = `${firstNumber}^${secondNumber}`;
     if (operationType === "squareRoot") displayTop.innerText = `\u221a${firstNumber}`;
   }
-  displayBottom.innerText = `=${result}`;
+  displayBottom.innerText = `${result}`;
 }
 
 function setupInputsForCalculation(id) {
