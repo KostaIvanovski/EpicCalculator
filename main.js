@@ -1,9 +1,7 @@
-// Elements
 const buttons = document.querySelectorAll("#buttonsContainer > button");
 const displayTop = document.querySelector("#displayTop");
 const displayBottom = document.querySelector("#displayBot");
 
-// Global Variables
 let firstNumber = "";
 let secondNumber = "";
 let operationType = "";
@@ -36,6 +34,8 @@ buttons.forEach((button) => {
       return;
     }
 
+    // If displayInputs() and setupInputsForCalculation() have their places switched, the dot will not show
+    // on the display when the button is pressed
     displayInputs(id);
     setupInputsForCalculation(id);
     if (id === "delete") erase();
