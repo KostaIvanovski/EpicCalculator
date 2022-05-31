@@ -31,9 +31,11 @@ buttons.forEach((button) => {
     }
 
     if (isOperationActive && (id === "plus" || id === "minus" || id === "star" || id === "backtick" || id === "power" || id === "squareRoot")) {
+      if (secondNumber === "") return;
       calculate();
       displayResult();
       reArrange();
+      identifyInputs(id);
       displayInputs(id);
       return;
     }
