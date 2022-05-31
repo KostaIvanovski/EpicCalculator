@@ -1,12 +1,9 @@
-//TODO: Make delete button functional with the calculating operations
 //TODO: Make it so whenever you press another operation whenever 2 different numbers are already to be calculated,
 // the rezult of those numbers should be automatically calculated and added for the next calculation
 // for the operation that has been selected (e.g. 2+3-1 should be turned to 5 whenever - is pressed)
 // display also needs to be changed accordingly
 //TODO: Maybe remove the = from the display (depends)
-//TODO: Error handling (NaN, operations with NaN, refreshing etc.)
-//TODO: Make Pow button functional
-//TODO: Make Root button functional
+//TODO: Error handling (NaN, operations with NaN, having more than one dot, refreshing etc.)
 //TODO: Test out more examples
 
 // Elements
@@ -18,38 +15,44 @@ const displayBottom = document.querySelector("#displayBot");
 let firstNumber = "";
 let secondNumber = "";
 let operationType = "";
+let result = "";
 let isOperationActive = false;
 let isSameOperation = false;
 let isFirstCalculation = true;
 let isFirstButtonPress = true;
-let result = null;
 let previousResult = null;
 
 buttons.forEach((button) => {
   button.addEventListener("click", (e) => {
     let id = e.target.id;
 
+    if (
+      isFirstButtonPress &&
+      (id === "plus" || id === "minus" || id === "star" || id === "backtick" || id === "dot" || id === "power" || id === "squareRoot")
+    ) {
+      clear();
+      return;
+    }
+
+    identifyInputs(id);
     displayInputs(id);
-    setupCalculationInputs(id);
-
-    if (id === "delete") erase(displayBottom);
+    if (id === "delete") erase();
     if (id === "clear") clear();
-
     if (id === "equals") {
       calculate();
       displayResult();
-      firstNumber = result;
-      isSameOperation = true;
-      previousResult = result;
+      reArrange();
     }
   });
 });
 
 function calculate() {
-  if (operationType === "add") result = add(parseFloat(firstNumber), parseFloat(secondNumber));
-  if (operationType === "subtract") result = subtract(parseFloat(firstNumber), parseFloat(secondNumber));
-  if (operationType === "multiply") result = multiply(parseFloat(firstNumber), parseFloat(secondNumber));
-  if (operationType === "divide") result = divide(parseFloat(firstNumber), parseFloat(secondNumber));
+  if (operationType === "add") result = parseFloat(firstNumber) + parseFloat(secondNumber);
+  if (operationType === "subtract") result = parseFloat(firstNumber) - parseFloat(secondNumber);
+  if (operationType === "multiply") result = parseFloat(firstNumber) * parseFloat(secondNumber);
+  if (operationType === "divide") result = parseFloat(firstNumber) / parseFloat(secondNumber);
+  if (operationType === "power") result = Math.pow(parseFloat(firstNumber), parseFloat(secondNumber));
+  if (operationType === "squareRoot") result = Math.sqrt(parseFloat(firstNumber));
   isFirstCalculation = false;
 }
 
@@ -59,6 +62,8 @@ function displayResult() {
     if (operationType === "subtract") displayTop.innerText = `${previousResult}-${secondNumber}`;
     if (operationType === "multiply") displayTop.innerText = `${previousResult}*${secondNumber}`;
     if (operationType === "divide") displayTop.innerText = `${previousResult}/${secondNumber}`;
+    if (operationType === "power") displayTop.innerText = `${previousResult}^${secondNumber}`;
+    if (operationType === "squareRoot") displayTop.innerText = `\u221a${previousResult}`;
   } else if (isFirstCalculation) {
     displayTop.innerText = displayBottom.innerText;
   } else {
@@ -66,12 +71,13 @@ function displayResult() {
     if (operationType === "subtract") displayTop.innerText = `${firstNumber}-${secondNumber}`;
     if (operationType === "multiply") displayTop.innerText = `${firstNumber}*${secondNumber}`;
     if (operationType === "divide") displayTop.innerText = `${firstNumber}/${secondNumber}`;
+    if (operationType === "power") displayTop.innerText = `${firstNumber}^${secondNumber}`;
+    if (operationType === "squareRoot") displayTop.innerText = `\u221a${firstNumber}`;
   }
-
   displayBottom.innerText = `=${result}`;
 }
 
-function setupCalculationInputs(id) {
+function identifyInputs(id) {
   if (id === "one") {
     if (!isOperationActive) firstNumber += "1";
     if (isOperationActive) secondNumber += "1";
@@ -119,6 +125,7 @@ function setupCalculationInputs(id) {
   if (id === "plus") {
     operationType = "add";
     isOperationActive = true;
+    isSameOperation = false;
     secondNumber = "";
   }
   if (id === "minus") {
@@ -135,6 +142,18 @@ function setupCalculationInputs(id) {
   }
   if (id === "backtick") {
     operationType = "divide";
+    isOperationActive = true;
+    isSameOperation = false;
+    secondNumber = "";
+  }
+  if (id === "power") {
+    operationType = "power";
+    isOperationActive = true;
+    isSameOperation = false;
+    secondNumber = "";
+  }
+  if (id === "squareRoot") {
+    operationType = "squareRoot";
     isOperationActive = true;
     isSameOperation = false;
     secondNumber = "";
@@ -241,6 +260,20 @@ function displayInputs(id) {
       }
       displayBottom.innerText += "/";
       break;
+    case "power":
+      if (isFirstButtonPress) {
+        displayBottom.innerText = "";
+        isFirstButtonPress = false;
+      }
+      displayBottom.innerText += "^";
+      break;
+    case "squareRoot":
+      if (isFirstButtonPress) {
+        displayBottom.innerText = "";
+        isFirstButtonPress = false;
+      }
+      displayBottom.innerText = "\u221a" + displayBottom.innerText;
+      break;
     case "dot":
       displayBottom.innerText += ".";
       break;
@@ -248,22 +281,6 @@ function displayInputs(id) {
     default:
       break;
   }
-}
-
-function add(num1, num2) {
-  return num1 + num2;
-}
-
-function subtract(num1, num2) {
-  return num1 - num2;
-}
-
-function multiply(num1, num2) {
-  return num1 * num2;
-}
-
-function divide(num1, num2) {
-  return num1 / num2;
 }
 
 function clear() {
@@ -281,6 +298,41 @@ function clear() {
   previousResult = null;
 }
 
-function erase(displayElement) {
-  displayElement.innerText = displayElement.innerText.slice(0, displayElement.innerText.length - 1);
+function erase() {
+  displayBottom.innerText = displayBottom.innerText.slice(0, displayBottom.innerText.length - 1);
+
+  if (displayBottom.innerText.length <= 1) {
+    displayBottom.innerText = "0";
+    isFirstButtonPress = true;
+  }
+
+  if (result !== null && result !== "") {
+    // If deleting on the result after the calculation
+    let arr = result.split("");
+    arr.pop();
+    result = arr.join("");
+    reArrange();
+  } else if (!isOperationActive && firstNumber !== "") {
+    // If deleting on the first number
+    let arr = firstNumber.split("");
+    arr.pop();
+    firstNumber = arr.join("");
+  } else if (isOperationActive && secondNumber !== "") {
+    // If deleting on the second number
+    let arr = secondNumber.split("");
+    arr.pop();
+    secondNumber = arr.join("");
+  } else if (isOperationActive && secondNumber === "") {
+    // If deleting on the operator.
+    operationType = "";
+    isOperationActive = false;
+  }
+}
+
+function reArrange() {
+  result = result.toString();
+  firstNumber = result;
+  previousResult = result;
+  isSameOperation = true;
+  isOperationActive = false;
 }
