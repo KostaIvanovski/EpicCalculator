@@ -1,7 +1,3 @@
-//TODO: Make it so whenever you press another operation whenever 2 different numbers are already to be calculated,
-// the rezult of those numbers should be automatically calculated and added for the next calculation
-// for the operation that has been selected (e.g. 2+3-1 should be turned to 5 whenever - is pressed)
-// display also needs to be changed accordingly
 //TODO: Maybe remove the = from the display (depends)
 //TODO: Error handling (NaN, operations with NaN, having more than one dot, refreshing etc.)
 //TODO: Test out more examples
@@ -31,6 +27,14 @@ buttons.forEach((button) => {
       (id === "plus" || id === "minus" || id === "star" || id === "backtick" || id === "dot" || id === "power" || id === "squareRoot")
     ) {
       clear();
+      return;
+    }
+
+    if (isOperationActive && (id === "plus" || id === "minus" || id === "star" || id === "backtick" || id === "power" || id === "squareRoot")) {
+      calculate();
+      displayResult();
+      reArrange();
+      displayInputs(id);
       return;
     }
 
