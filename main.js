@@ -1,5 +1,5 @@
 //TODO: Maybe remove the = from the display (depends)
-//TODO: Error handling (NaN, operations with NaN,, refreshing etc.)
+//TODO: Error handling (NaN, operations with NaN, refreshing etc.)
 //TODO: Test out more examples
 
 // Elements
@@ -49,7 +49,7 @@ buttons.forEach((button) => {
         clear();
         throw alert("You cant divide with 0 :)");
       }
-      if (secondNumber === "" || operationType === "") {
+      if ((secondNumber === "" || operationType === "") && operationType !== "squareRoot") {
         clear();
         return;
       }
