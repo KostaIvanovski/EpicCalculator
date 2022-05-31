@@ -1,5 +1,5 @@
 //TODO: Maybe remove the = from the display (depends)
-//TODO: Error handling (NaN, operations with NaN, having more than one dot, refreshing etc.)
+//TODO: Error handling (NaN, operations with NaN,, refreshing etc.)
 //TODO: Test out more examples
 
 // Elements
@@ -45,7 +45,7 @@ buttons.forEach((button) => {
     if (id === "delete") erase();
     if (id === "clear") clear();
     if (id === "equals") {
-      if (parseFloat(secondNumber) === 0) {
+      if (parseFloat(secondNumber) === 0 && operationType === "divide") {
         clear();
         throw alert("You cant divide with 0 :)");
       }
