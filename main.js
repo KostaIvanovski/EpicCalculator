@@ -1,5 +1,5 @@
 //TODO: Maybe remove the = from the display (depends)
-//TODO: Error handling (NaN, operations with NaN, dividing by 0, pressing = at the start, having more than one dot, refreshing etc.)
+//TODO: Error handling (NaN, operations with NaN, dividing by 0, having more than one dot, refreshing etc.)
 //TODO: Test out more examples
 
 // Elements
@@ -24,7 +24,7 @@ buttons.forEach((button) => {
 
     if (
       isFirstButtonPress &&
-      (id === "plus" || id === "minus" || id === "star" || id === "backtick" || id === "dot" || id === "power" || id === "squareRoot")
+      (id === "plus" || id === "minus" || id === "star" || id === "backtick" || id === "dot" || id === "power" || id === "squareRoot" || id === "equals")
     ) {
       clear();
       return;
