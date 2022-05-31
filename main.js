@@ -35,19 +35,23 @@ buttons.forEach((button) => {
       calculate();
       displayResult();
       reArrange();
-      identifyInputs(id);
       displayInputs(id);
+      identifyInputs(id);
       return;
     }
 
-    identifyInputs(id);
     displayInputs(id);
+    identifyInputs(id);
     if (id === "delete") erase();
     if (id === "clear") clear();
     if (id === "equals") {
-      if (parseInt(secondNumber) === 0) {
+      if (parseFloat(secondNumber) === 0) {
         clear();
         throw alert("You cant divide with 0 :)");
+      }
+      if (secondNumber === "" || operationType === "") {
+        clear();
+        return;
       }
       calculate();
       displayResult();
@@ -129,8 +133,8 @@ function identifyInputs(id) {
     if (isOperationActive) secondNumber += "0";
   }
   if (id === "dot") {
-    if (!isOperationActive) firstNumber += ".";
-    if (isOperationActive) secondNumber += ".";
+    if (!isOperationActive && firstNumber.split("").indexOf(".") === -1) firstNumber += ".";
+    if (isOperationActive && secondNumber.split("").indexOf(".") === -1) secondNumber += ".";
   }
   if (id === "plus") {
     operationType = "add";
@@ -285,7 +289,8 @@ function displayInputs(id) {
       displayBottom.innerText = "\u221a" + displayBottom.innerText;
       break;
     case "dot":
-      displayBottom.innerText += ".";
+      if (!isOperationActive && firstNumber.split("").indexOf(".") === -1 && firstNumber !== "") displayBottom.innerText += ".";
+      if (isOperationActive && secondNumber.split("").indexOf(".") === -1 && secondNumber !== "") displayBottom.innerText += ".";
       break;
 
     default:
