@@ -1,4 +1,3 @@
-// TODO: Fix bug with using del after root operation has been selected
 const buttons = document.querySelectorAll("#buttonsContainer > button");
 const displayTop = document.querySelector("#displayTop");
 const displayBottom = document.querySelector("#displayBot");
@@ -311,23 +310,19 @@ function clear() {
 }
 
 function erase() {
-  // if (displayBottom.innerText.split("").indexOf("\u221a") !== -1) {
-  //   displayBottom.innerText = displayBottom.innerText.slice(0, displayBottom.innerText.length - 1);
-  // } else {
-  //   displayBottom.innerText = displayBottom.innerText.slice(0, displayBottom.innerText.length - 1);
-  // }
-
-  displayBottom.innerText = displayBottom.innerText.slice(0, displayBottom.innerText.length - 1);
-
-  if (displayBottom.innerText.length <= 1) {
-    displayBottom.innerText = "0";
-    isFirstButtonPress = true;
+  if (displayBottom.innerText.split("").indexOf("\u221a") !== -1) {
+    // If deleting square root operator
+    let temp = displayBottom.innerText.split("");
+    temp.splice(0, 1);
+    displayBottom.innerText = temp.join("");
+    operationType = "";
+    isOperationActive = false;
+    return;
+  } else {
+    // Default if its any other operation other than sqrt
+    displayBottom.innerText = displayBottom.innerText.slice(0, displayBottom.innerText.length - 1);
   }
-  // if (displayBottom.innerText.split("").indexOf("\u221a") !== -1) {
-  //   let arr = firstNumber.split("");
-  //   arr.shift();
-  //   firstNumber = arr.join("");
-  // }
+
   if (result !== null && result !== "") {
     // If deleting on the result after the calculation
     let arr = result.split("");
@@ -358,6 +353,3 @@ function reArrange() {
   isSameOperation = true;
   isOperationActive = false;
 }
-
-let arr = ["\u221a", "1", "2"];
-console.log(arr.indexOf("\u221a"));
