@@ -296,7 +296,7 @@ function displayInputs(id) {
 
 function clear() {
   displayTop.innerText = "";
-  displayBottom.innerText = "0";
+  displayBottom.innerText = "";
 
   firstNumber = "";
   secondNumber = "";
