@@ -2,21 +2,30 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  border: 1px solid darkred;
 }
 
 html {
-  background-color: gray;
+  background-color: rgb(0, 0, 0);
 }
 
 body {
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
 }
 
 #calculatorFrame {
   margin-top: 10%;
   margin-bottom: 26.5vh;
+  box-shadow: 0 0 5px 1px rgb(255, 153, 0), 0 -5px 10px 1px rgb(255, 153, 0);
+}
+
+#displayBot,
+#displayTop {
+  font-size: 18px;
+  text-align: end;
+  color: white;
+  background-color: black;
+  padding: 5px;
 }
 
 #displayContainer > p {
@@ -29,14 +38,18 @@ body {
   align-items: center;
   width: 100%;
   height: 100%;
+  background: url("./backgrounds/19Nx.gif");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
 }
 
 #buttonsContainer {
   display: grid;
-  width: 100%;
-  height: 100%;
-  grid-template-columns: repeat(4, 50px);
-  grid-template-rows: repeat(5, 50px);
+  width: 275px;
+  height: 300px;
+  grid-template-columns: repeat(4, 25%);
+  grid-template-rows: repeat(5, 20%);
   grid-template-areas:
     "power squareRoot delete clear"
     "seven eight nine backtick"
@@ -45,8 +58,21 @@ body {
     "aZero comma equals plus";
 }
 
+#buttonsContainer > button {
+  border: none;
+  font-size: 18px;
+  font-weight: bolder;
+  color: rgb(255, 239, 210);
+  background-color: rgb(97, 63, 0);
+}
+
+#buttonsContainer > button:hover {
+  background-color: rgb(133, 86, 0);
+}
+
 #buttonsContainer > button:active {
-  background: linear-gradient(lightblue, rgb(122, 122, 255));
+  background: rgb(202, 121, 0);
+  border: none;
 }
 
 #one {
