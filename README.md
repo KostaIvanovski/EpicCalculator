@@ -1,2 +1,3 @@
-# Calculator
- Epic Calculator
+# Epic Calculator
+
+Its just a calculator ....... but its epic!
