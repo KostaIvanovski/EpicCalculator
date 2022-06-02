@@ -154,3 +154,13 @@ body {
 #squareRoot {
   grid-area: squareRoot;
 }
+
+#copyright {
+  font-size: 18px;
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+  width: fit-content;
+  height: fit-content;
+  color: white;
+}
