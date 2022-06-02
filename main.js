@@ -15,6 +15,7 @@ let previousResult = null;
 buttons.forEach((button) => {
   button.addEventListener("click", (e) => {
     let id = e.target.id;
+    if (displayBottom.innerText.length === 29 && id !== "delete" && id !== "clear") return;
 
     if (
       isFirstButtonPress &&

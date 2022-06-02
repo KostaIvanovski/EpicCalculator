@@ -16,14 +16,14 @@ body {
 #calculatorFrame {
   margin-top: 10%;
   margin-bottom: 26.5vh;
-  box-shadow: 0 0 5px 1px rgb(255, 153, 0), 0 -5px 10px 1px rgb(255, 153, 0);
+  box-shadow: 0 1px 5px 1px rgb(255, 153, 0), 0 -5px 10px 1px rgb(255, 153, 0);
 }
 
 #displayBot,
 #displayTop {
   font-size: 18px;
   text-align: end;
-  color: white;
+  color: rgb(255, 248, 235);
   background-color: black;
   padding: 5px;
 }
