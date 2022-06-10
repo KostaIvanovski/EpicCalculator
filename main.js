@@ -2,6 +2,7 @@ const buttons = document.querySelectorAll("#buttonsContainer > button");
 const displayTop = document.querySelector("#displayTop");
 const displayBottom = document.querySelector("#displayBot");
 
+// state of calculator
 let firstNumber = "";
 let secondNumber = "";
 let operationType = "";
@@ -14,18 +15,16 @@ let previousResult = null;
 
 buttons.forEach((button) => {
   button.addEventListener("click", (e) => {
-    let id = e.target.id;
-    if (displayBottom.innerText.length === 29 && id !== "delete" && id !== "clear") return;
+    let button = e.target;
+    let id = button.id;
+    if (displayIsOverflowed() && isNotClearAndDeleteButton(button)) return;
 
-    if (
-      isFirstButtonPress &&
-      (id === "plus" || id === "minus" || id === "star" || id === "backtick" || id === "dot" || id === "power" || id === "squareRoot" || id === "equals")
-    ) {
+    if (isFirstButtonPress && (isOperatorButton(button) || id == "dot")) {
       clear();
       return;
     }
 
-    if (isOperationActive && (id === "plus" || id === "minus" || id === "star" || id === "backtick" || id === "power" || id === "squareRoot")) {
+    if (isOperationActive && isOperatorButton(button)) {
       if (secondNumber === "") return;
       calculate();
       displayResult();
@@ -57,6 +56,18 @@ buttons.forEach((button) => {
   });
 });
 
+function displayIsOverflowed() {
+  return displayBottom.innerText.length === 29
+}
+
+function isNotClearAndDeleteButton(button) {
+  return button.id !== "delete" && button.id !== "clear"
+}
+
+function isOperatorButton(button) {
+  return (button.id === "plus" || button.id === "minus" || button.id === "star" || button.id === "backtick" || button.id === "power" || button.id === "squareRoot" || button.id === "equals")
+}
+
 function calculate() {
   if (operationType === "add") result = parseFloat(firstNumber) + parseFloat(secondNumber);
   if (operationType === "subtract") result = parseFloat(firstNumber) - parseFloat(secondNumber);
@@ -69,23 +80,22 @@ function calculate() {
 
 function displayResult() {
   if (isSameOperation) {
-    if (operationType === "add") displayTop.innerText = `${previousResult}+${secondNumber}`;
-    if (operationType === "subtract") displayTop.innerText = `${previousResult}-${secondNumber}`;
-    if (operationType === "multiply") displayTop.innerText = `${previousResult}*${secondNumber}`;
-    if (operationType === "divide") displayTop.innerText = `${previousResult}/${secondNumber}`;
-    if (operationType === "power") displayTop.innerText = `${previousResult}^${secondNumber}`;
-    if (operationType === "squareRoot") displayTop.innerText = `\u221a${previousResult}`;
+    setTopDisplay(previousResult, secondNumber)
   } else if (isFirstCalculation) {
     displayTop.innerText = displayBottom.innerText;
   } else {
-    if (operationType === "add") displayTop.innerText = `${firstNumber}+${secondNumber}`;
-    if (operationType === "subtract") displayTop.innerText = `${firstNumber}-${secondNumber}`;
-    if (operationType === "multiply") displayTop.innerText = `${firstNumber}*${secondNumber}`;
-    if (operationType === "divide") displayTop.innerText = `${firstNumber}/${secondNumber}`;
-    if (operationType === "power") displayTop.innerText = `${firstNumber}^${secondNumber}`;
-    if (operationType === "squareRoot") displayTop.innerText = `\u221a${firstNumber}`;
+    setTopDisplay(firstNumber, secondNumber)
   }
   displayBottom.innerText = `${result}`;
+}
+
+function setTopDisplay(firstNumber, secondNumber) {
+  if (operationType === "add") displayTop.innerText = `${firstNumber}+${secondNumber}`;
+  if (operationType === "subtract") displayTop.innerText = `${firstNumber}-${secondNumber}`;
+  if (operationType === "multiply") displayTop.innerText = `${firstNumber}*${secondNumber}`;
+  if (operationType === "divide") displayTop.innerText = `${firstNumber}/${secondNumber}`;
+  if (operationType === "power") displayTop.innerText = `${firstNumber}^${secondNumber}`;
+  if (operationType === "squareRoot") displayTop.innerText = `\u221a${firstNumber}`;
 }
 
 function setupInputsForCalculation(id) {
