@@ -1,4 +1,5 @@
 const buttons = document.querySelectorAll("#buttonsContainer > button");
+const digitButtons = document.querySelectorAll("#buttonsContainer > .digit")
 const displayTop = document.querySelector("#displayTop");
 const displayBottom = document.querySelector("#displayBot");
 
@@ -12,6 +13,31 @@ let isSameOperation = false;
 let isFirstCalculation = true;
 let isFirstButtonPress = true;
 let previousResult = null;
+
+digitButtons.forEach(button => {
+  button.addEventListener("click", e => inputDigit(e.target.innerText))
+})
+
+function inputDigit(digitText) {
+  updateDisplayWithDigit(digitText)
+  appendDigitToActiveOperand(digitText)
+}
+
+function updateDisplayWithDigit(digitText) {
+  if (isFirstButtonPress) {
+    displayBottom.innerText = "";
+    isFirstButtonPress = false;
+  }
+  displayBottom.innerText += digitText;
+}
+
+function appendDigitToActiveOperand(digitText) {
+  if (!isOperationActive) {
+    firstNumber += digitText;
+  } else {
+    secondNumber += digitText;
+  }
+}
 
 buttons.forEach((button) => {
   button.addEventListener("click", (e) => {
@@ -99,46 +125,6 @@ function setTopDisplay(firstNumber, secondNumber) {
 }
 
 function setupInputsForCalculation(id) {
-  if (id === "one") {
-    if (!isOperationActive) firstNumber += "1";
-    if (isOperationActive) secondNumber += "1";
-  }
-  if (id === "two") {
-    if (!isOperationActive) firstNumber += "2";
-    if (isOperationActive) secondNumber += "2";
-  }
-  if (id === "three") {
-    if (!isOperationActive) firstNumber += "3";
-    if (isOperationActive) secondNumber += "3";
-  }
-  if (id === "four") {
-    if (!isOperationActive) firstNumber += "4";
-    if (isOperationActive) secondNumber += "4";
-  }
-  if (id === "five") {
-    if (!isOperationActive) firstNumber += "5";
-    if (isOperationActive) secondNumber += "5";
-  }
-  if (id === "six") {
-    if (!isOperationActive) firstNumber += "6";
-    if (isOperationActive) secondNumber += "6";
-  }
-  if (id === "seven") {
-    if (!isOperationActive) firstNumber += "7";
-    if (isOperationActive) secondNumber += "7";
-  }
-  if (id === "eight") {
-    if (!isOperationActive) firstNumber += "8";
-    if (isOperationActive) secondNumber += "8";
-  }
-  if (id === "nine") {
-    if (!isOperationActive) firstNumber += "9";
-    if (isOperationActive) secondNumber += "9";
-  }
-  if (id === "zero") {
-    if (!isOperationActive) firstNumber += "0";
-    if (isOperationActive) secondNumber += "0";
-  }
   if (id === "dot") {
     if (!isOperationActive && firstNumber.split("").indexOf(".") === -1) firstNumber += ".";
     if (isOperationActive && secondNumber.split("").indexOf(".") === -1) secondNumber += ".";
@@ -183,76 +169,6 @@ function setupInputsForCalculation(id) {
 
 function displayInputs(id) {
   switch (id) {
-    case "one":
-      if (isFirstButtonPress) {
-        displayBottom.innerText = "";
-        isFirstButtonPress = false;
-      }
-      displayBottom.innerText += "1";
-      break;
-    case "two":
-      if (isFirstButtonPress) {
-        displayBottom.innerText = "";
-        isFirstButtonPress = false;
-      }
-      displayBottom.innerText += "2";
-      break;
-    case "three":
-      if (isFirstButtonPress) {
-        displayBottom.innerText = "";
-        isFirstButtonPress = false;
-      }
-      displayBottom.innerText += "3";
-      break;
-    case "four":
-      if (isFirstButtonPress) {
-        displayBottom.innerText = "";
-        isFirstButtonPress = false;
-      }
-      displayBottom.innerText += "4";
-      break;
-    case "five":
-      if (isFirstButtonPress) {
-        displayBottom.innerText = "";
-        isFirstButtonPress = false;
-      }
-      displayBottom.innerText += "5";
-      break;
-    case "six":
-      if (isFirstButtonPress) {
-        displayBottom.innerText = "";
-        isFirstButtonPress = false;
-      }
-      displayBottom.innerText += "6";
-      break;
-    case "seven":
-      if (isFirstButtonPress) {
-        displayBottom.innerText = "";
-        isFirstButtonPress = false;
-      }
-      displayBottom.innerText += "7";
-      break;
-    case "eight":
-      if (isFirstButtonPress) {
-        displayBottom.innerText = "";
-        isFirstButtonPress = false;
-      }
-      displayBottom.innerText += "8";
-      break;
-    case "nine":
-      if (isFirstButtonPress) {
-        displayBottom.innerText = "";
-        isFirstButtonPress = false;
-      }
-      displayBottom.innerText += "9";
-      break;
-    case "zero":
-      if (isFirstButtonPress) {
-        displayBottom.innerText = "";
-        isFirstButtonPress = false;
-      }
-      displayBottom.innerText += "0";
-      break;
     case "plus":
       if (isFirstButtonPress) {
         displayBottom.innerText = "";
