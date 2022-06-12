@@ -11,7 +11,7 @@ const displayBottom = document.querySelector("#displayBot");
 // state of calculator
 let firstNumber = "";
 let secondNumber = "";
-let operationType = "";
+let activeOperation = "";
 let result = "";
 let isOperationActive = false;
 let isSameOperation = false;
@@ -69,10 +69,10 @@ function appendDotToActiveOperand() {
 }
 
 operatorButtons.forEach(button => {
-  button.addEventListener("click", e => setOperation(e.target.id))
+  button.addEventListener("click", e => setOperation(e.target))
 })
 
-function setOperation(operationText) {
+function setOperation(operatorButton) {
   if(displayIsOverflowed()) {
     return
   }
@@ -89,13 +89,25 @@ function setOperation(operationText) {
     calculate()
     displayResult()
     reArrange()
-    displayInputs(operationText)
-    setupInputsForCalculation(operationText)
+    updateDisplayWithOperatorSymbol(operatorButton)
+    updateActiveOperation(operatorButton.id)
     return
   }
 
-  displayInputs(operationText);
-  setupInputsForCalculation(operationText);
+  updateDisplayWithOperatorSymbol(operatorButton)
+  updateActiveOperation(operatorButton.id);
+}
+
+function updateDisplayWithOperatorSymbol(operatorButton) {
+  if (isFirstButtonPress) {
+    displayBottom.innerText = "";
+    isFirstButtonPress = false;
+  }
+  if(operatorButton.id == "squareRoot") {
+    displayBottom.innerText = "\u221a" + displayBottom.innerText;
+  } else {
+    displayBottom.innerText += operatorButton.dataset.operatorSymbol;
+  }
 }
 
 equalsButton.addEventListener("click", e => applyEquals())
@@ -104,11 +116,11 @@ function applyEquals() {
   if(displayIsOverflowed()) {
     return
   }
-  if (parseFloat(secondNumber) === 0 && operationType === "divide") {
+  if (parseFloat(secondNumber) === 0 && activeOperation === "divide") {
     clear()
     throw alert("You cant divide with 0 :)")
   }
-  if ((secondNumber === "" || operationType === "") && operationType !== "squareRoot") {
+  if ((secondNumber === "" || activeOperation === "") && activeOperation !== "squareRoot") {
     clear()
     return
   }
@@ -125,12 +137,12 @@ function displayIsOverflowed() {
 }
 
 function calculate() {
-  if (operationType === "add") result = parseFloat(firstNumber) + parseFloat(secondNumber);
-  if (operationType === "subtract") result = parseFloat(firstNumber) - parseFloat(secondNumber);
-  if (operationType === "multiply") result = parseFloat(firstNumber) * parseFloat(secondNumber);
-  if (operationType === "divide") result = parseFloat(firstNumber) / parseFloat(secondNumber);
-  if (operationType === "power") result = Math.pow(parseFloat(firstNumber), parseFloat(secondNumber));
-  if (operationType === "squareRoot") result = Math.sqrt(parseFloat(firstNumber));
+  if (activeOperation === "add") result = parseFloat(firstNumber) + parseFloat(secondNumber);
+  if (activeOperation === "subtract") result = parseFloat(firstNumber) - parseFloat(secondNumber);
+  if (activeOperation === "multiply") result = parseFloat(firstNumber) * parseFloat(secondNumber);
+  if (activeOperation === "divide") result = parseFloat(firstNumber) / parseFloat(secondNumber);
+  if (activeOperation === "power") result = Math.pow(parseFloat(firstNumber), parseFloat(secondNumber));
+  if (activeOperation === "squareRoot") result = Math.sqrt(parseFloat(firstNumber));
   isFirstCalculation = false;
 }
 
@@ -146,100 +158,19 @@ function displayResult() {
 }
 
 function setTopDisplay(firstNumber, secondNumber) {
-  if (operationType === "add") displayTop.innerText = `${firstNumber}+${secondNumber}`;
-  if (operationType === "subtract") displayTop.innerText = `${firstNumber}-${secondNumber}`;
-  if (operationType === "multiply") displayTop.innerText = `${firstNumber}*${secondNumber}`;
-  if (operationType === "divide") displayTop.innerText = `${firstNumber}/${secondNumber}`;
-  if (operationType === "power") displayTop.innerText = `${firstNumber}^${secondNumber}`;
-  if (operationType === "squareRoot") displayTop.innerText = `\u221a${firstNumber}`;
+  if (activeOperation === "add") displayTop.innerText = `${firstNumber}+${secondNumber}`;
+  if (activeOperation === "subtract") displayTop.innerText = `${firstNumber}-${secondNumber}`;
+  if (activeOperation === "multiply") displayTop.innerText = `${firstNumber}*${secondNumber}`;
+  if (activeOperation === "divide") displayTop.innerText = `${firstNumber}/${secondNumber}`;
+  if (activeOperation === "power") displayTop.innerText = `${firstNumber}^${secondNumber}`;
+  if (activeOperation === "squareRoot") displayTop.innerText = `\u221a${firstNumber}`;
 }
 
-function setupInputsForCalculation(id) {
-  if (id === "plus") {
-    operationType = "add";
-    isOperationActive = true;
-    isSameOperation = false;
-    secondNumber = "";
-  }
-  if (id === "minus") {
-    operationType = "subtract";
-    isOperationActive = true;
-    isSameOperation = false;
-    secondNumber = "";
-  }
-  if (id === "star") {
-    operationType = "multiply";
-    isOperationActive = true;
-    isSameOperation = false;
-    secondNumber = "";
-  }
-  if (id === "backtick") {
-    operationType = "divide";
-    isOperationActive = true;
-    isSameOperation = false;
-    secondNumber = "";
-  }
-  if (id === "power") {
-    operationType = "power";
-    isOperationActive = true;
-    isSameOperation = false;
-    secondNumber = "";
-  }
-  if (id === "squareRoot") {
-    operationType = "squareRoot";
-    isOperationActive = true;
-    isSameOperation = false;
-    secondNumber = "";
-  }
-}
-
-function displayInputs(id) {
-  switch (id) {
-    case "plus":
-      if (isFirstButtonPress) {
-        displayBottom.innerText = "";
-        isFirstButtonPress = false;
-      }
-      displayBottom.innerText += "+";
-      break;
-    case "minus":
-      if (isFirstButtonPress) {
-        displayBottom.innerText = "";
-        isFirstButtonPress = false;
-      }
-      displayBottom.innerText += "-";
-      break;
-    case "star":
-      if (isFirstButtonPress) {
-        displayBottom.innerText = "";
-        isFirstButtonPress = false;
-      }
-      displayBottom.innerText += "*";
-      break;
-    case "backtick":
-      if (isFirstButtonPress) {
-        displayBottom.innerText = "";
-        isFirstButtonPress = false;
-      }
-      displayBottom.innerText += "/";
-      break;
-    case "power":
-      if (isFirstButtonPress) {
-        displayBottom.innerText = "";
-        isFirstButtonPress = false;
-      }
-      displayBottom.innerText += "^";
-      break;
-    case "squareRoot":
-      if (isFirstButtonPress) {
-        displayBottom.innerText = "";
-        isFirstButtonPress = false;
-      }
-      displayBottom.innerText = "\u221a" + displayBottom.innerText;
-      break;
-    default:
-      break;
-  }
+function updateActiveOperation(operationText) {
+  activeOperation = operationText
+  isOperationActive = true;
+  isSameOperation = false;
+  secondNumber = "";
 }
 
 function clear() {
@@ -248,7 +179,7 @@ function clear() {
 
   firstNumber = "";
   secondNumber = "";
-  operationType = "";
+  activeOperation = "";
   isOperationActive = false;
   isSameOperation = false;
   isFirstCalculation = true;
@@ -263,7 +194,7 @@ function erase() {
     let temp = displayBottom.innerText.split("");
     temp.splice(0, 1);
     displayBottom.innerText = temp.join("");
-    operationType = "";
+    activeOperation = "";
     isOperationActive = false;
     return;
   } else {
@@ -289,7 +220,7 @@ function erase() {
     secondNumber = arr.join("");
   } else if (isOperationActive && secondNumber === "") {
     // If deleting on the operator.
-    operationType = "";
+    activeOperation = "";
     isOperationActive = false;
   }
 }
