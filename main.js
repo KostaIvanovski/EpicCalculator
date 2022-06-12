@@ -197,9 +197,13 @@ function updateActiveOperation(operatorButton) {
 }
 
 function clear() {
-  displayTop.innerText = "";
-  displayBottom.innerText = "";
+  clearDisplay()
   resetCalculatorState()
+}
+
+function clearDisplay() {
+  displayTop.innerText = ""
+  displayBottom.innerText = ""
 }
 
 function erase() {
