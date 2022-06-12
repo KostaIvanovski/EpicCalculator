@@ -7,6 +7,7 @@ const calculatorState = {
   firstNumber: "",
   secondNumber: "",
   activeOperation: "",
+  activeOperationSymbol: "",
   result: "",
   isOperationActive: false,
   isSameOperation: false,
@@ -47,6 +48,7 @@ function resetCalculatorState() {
   calculatorState.firstNumber = "";
   calculatorState.secondNumber = "";
   calculatorState.activeOperation = "";
+  calculatorState.activeOperationSymbol = "";
   calculatorState.result = "";
   calculatorState.isOperationActive = false;
   calculatorState.isSameOperation = false;
@@ -116,12 +118,12 @@ function setOperation(operatorButton) {
     displayResult()
     reArrange()
     updateDisplayWithOperatorSymbol(operatorButton)
-    updateActiveOperation(operatorButton.id)
+    updateActiveOperation(operatorButton)
     return
   }
 
   updateDisplayWithOperatorSymbol(operatorButton)
-  updateActiveOperation(operatorButton.id);
+  updateActiveOperation(operatorButton);
 }
 
 function updateDisplayWithOperatorSymbol(operatorButton) {
@@ -179,16 +181,16 @@ function displayResult() {
 }
 
 function setTopDisplay(firstNumber, secondNumber) {
-  if (calculatorState.activeOperation === "add") displayTop.innerText = `${firstNumber}+${secondNumber}`;
-  if (calculatorState.activeOperation === "subtract") displayTop.innerText = `${firstNumber}-${secondNumber}`;
-  if (calculatorState.activeOperation === "multiply") displayTop.innerText = `${firstNumber}*${secondNumber}`;
-  if (calculatorState.activeOperation === "divide") displayTop.innerText = `${firstNumber}/${secondNumber}`;
-  if (calculatorState.activeOperation === "power") displayTop.innerText = `${firstNumber}^${secondNumber}`;
-  if (calculatorState.activeOperation === "squareRoot") displayTop.innerText = `${squareRootSymbol}${firstNumber}`;
+  if(calculate.activeOperation === "squareRoot") {
+    displayTop.innerText = `${calculatorState.activeOperationSymbol}${firstNumber}`;
+  } else {
+    displayTop.innerText = `${firstNumber}${calculatorState.activeOperationSymbol}${secondNumber}`;
+  }
 }
 
-function updateActiveOperation(operationText) {
-  calculatorState.activeOperation = operationText
+function updateActiveOperation(operatorButton) {
+  calculatorState.activeOperation = operatorButton.id
+  calculatorState.activeOperationSymbol = operatorButton.dataset.operatorSymbol
   calculatorState.isOperationActive = true;
   calculatorState.isSameOperation = false;
   calculatorState.secondNumber = "";
