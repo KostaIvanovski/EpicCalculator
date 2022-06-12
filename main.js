@@ -1,5 +1,10 @@
 const buttons = document.querySelectorAll("#buttonsContainer > button");
 const digitButtons = document.querySelectorAll("#buttonsContainer > .digit")
+const dotButton = document.querySelector("#buttonsContainer > #dot")
+const operatorButtons = document.querySelectorAll("#buttonsContainer > .operator")
+const equalsButton = document.querySelector("#buttonsContainer > #equals")
+const deleteButton = document.querySelector("#buttonsContainer > #delete")
+const clearButton = document.querySelector("#buttonsContainer > #clear")
 const displayTop = document.querySelector("#displayTop");
 const displayBottom = document.querySelector("#displayBot");
 
@@ -19,6 +24,9 @@ digitButtons.forEach(button => {
 })
 
 function inputDigit(digitText) {
+  if(displayIsOverflowed()) {
+    return
+  }
   updateDisplayWithDigit(digitText)
   appendDigitToActiveOperand(digitText)
 }
@@ -39,59 +47,81 @@ function appendDigitToActiveOperand(digitText) {
   }
 }
 
-buttons.forEach((button) => {
-  button.addEventListener("click", (e) => {
-    let button = e.target;
-    let id = button.id;
-    if (displayIsOverflowed() && isNotClearAndDeleteButton(button)) return;
+dotButton.addEventListener("click", e => inputDot())
 
-    if (isFirstButtonPress && (isOperatorButton(button) || id == "dot")) {
-      clear();
-      return;
-    }
+function inputDot() {
+  if(displayIsOverflowed()) {
+    return
+  }
 
-    if (isOperationActive && isOperatorButton(button)) {
-      if (secondNumber === "") return;
-      calculate();
-      displayResult();
-      reArrange();
-      displayInputs(id);
-      setupInputsForCalculation(id);
-      return;
-    }
+  updateDisplayWithDot()
+  appendDotToActiveOperand()
+}
 
-    // If displayInputs() and setupInputsForCalculation() have their places switched, the dot will not show
-    // on the display when the button is pressed
-    displayInputs(id);
-    setupInputsForCalculation(id);
-    if (id === "delete") erase();
-    if (id === "clear") clear();
-    if (id === "equals") {
-      if (parseFloat(secondNumber) === 0 && operationType === "divide") {
-        clear();
-        throw alert("You cant divide with 0 :)");
-      }
-      if ((secondNumber === "" || operationType === "") && operationType !== "squareRoot") {
-        clear();
-        return;
-      }
-      calculate();
-      displayResult();
-      reArrange();
-    }
-  });
-});
+function updateDisplayWithDot() {
+  if (!isOperationActive && firstNumber.split("").indexOf(".") === -1 && firstNumber !== "") displayBottom.innerText += ".";
+  if (isOperationActive && secondNumber.split("").indexOf(".") === -1 && secondNumber !== "") displayBottom.innerText += ".";
+}
+
+function appendDotToActiveOperand() {
+  if (!isOperationActive && firstNumber.split("").indexOf(".") === -1) firstNumber += ".";
+  if (isOperationActive && secondNumber.split("").indexOf(".") === -1) secondNumber += ".";
+}
+
+operatorButtons.forEach(button => {
+  button.addEventListener("click", e => setOperation(e.target.id))
+})
+
+function setOperation(operationText) {
+  if(displayIsOverflowed()) {
+    return
+  }
+
+  if(isFirstButtonPress) {
+    clear()
+    return
+  }
+
+  if(isOperationActive) {
+    if (secondNumber === "") {
+      return
+    } 
+    calculate()
+    displayResult()
+    reArrange()
+    displayInputs(operationText)
+    setupInputsForCalculation(operationText)
+    return
+  }
+
+  displayInputs(operationText);
+  setupInputsForCalculation(operationText);
+}
+
+equalsButton.addEventListener("click", e => applyEquals())
+
+function applyEquals() {
+  if(displayIsOverflowed()) {
+    return
+  }
+  if (parseFloat(secondNumber) === 0 && operationType === "divide") {
+    clear()
+    throw alert("You cant divide with 0 :)")
+  }
+  if ((secondNumber === "" || operationType === "") && operationType !== "squareRoot") {
+    clear()
+    return
+  }
+  calculate()
+  displayResult()
+  reArrange()
+}
+
+deleteButton.addEventListener("click", e => erase())
+clearButton.addEventListener("click", e => clear())
 
 function displayIsOverflowed() {
   return displayBottom.innerText.length === 29
-}
-
-function isNotClearAndDeleteButton(button) {
-  return button.id !== "delete" && button.id !== "clear"
-}
-
-function isOperatorButton(button) {
-  return (button.id === "plus" || button.id === "minus" || button.id === "star" || button.id === "backtick" || button.id === "power" || button.id === "squareRoot" || button.id === "equals")
 }
 
 function calculate() {
@@ -125,10 +155,6 @@ function setTopDisplay(firstNumber, secondNumber) {
 }
 
 function setupInputsForCalculation(id) {
-  if (id === "dot") {
-    if (!isOperationActive && firstNumber.split("").indexOf(".") === -1) firstNumber += ".";
-    if (isOperationActive && secondNumber.split("").indexOf(".") === -1) secondNumber += ".";
-  }
   if (id === "plus") {
     operationType = "add";
     isOperationActive = true;
@@ -211,11 +237,6 @@ function displayInputs(id) {
       }
       displayBottom.innerText = "\u221a" + displayBottom.innerText;
       break;
-    case "dot":
-      if (!isOperationActive && firstNumber.split("").indexOf(".") === -1 && firstNumber !== "") displayBottom.innerText += ".";
-      if (isOperationActive && secondNumber.split("").indexOf(".") === -1 && secondNumber !== "") displayBottom.innerText += ".";
-      break;
-
     default:
       break;
   }
