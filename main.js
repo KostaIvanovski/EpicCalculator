@@ -1,356 +1,252 @@
-const buttons = document.querySelectorAll("#buttonsContainer > button");
+const squareRootSymbol = "\u221a"
+
 const displayTop = document.querySelector("#displayTop");
-const displayBottom = document.querySelector("#displayBot");
+const displayBottom = document.querySelector("#displayBottom");
 
-let firstNumber = "";
-let secondNumber = "";
-let operationType = "";
-let result = "";
-let isOperationActive = false;
-let isSameOperation = false;
-let isFirstCalculation = true;
-let isFirstButtonPress = true;
-let previousResult = null;
+const calculatorState = {
+  firstNumber: "",
+  secondNumber: "",
+  activeOperation: "",
+  activeOperationSymbol: "",
+  result: "",
+  isOperationActive: false,
+  isSameOperation: false,
+  isFirstCalculation: true,
+  isFirstButtonPress: true,
+  previousResult: null
+}
 
-buttons.forEach((button) => {
-  button.addEventListener("click", (e) => {
-    let id = e.target.id;
-    if (displayBottom.innerText.length === 29 && id !== "delete" && id !== "clear") return;
+setClickListenersForButtons()
+resetCalculatorState()
 
-    if (
-      isFirstButtonPress &&
-      (id === "plus" || id === "minus" || id === "star" || id === "backtick" || id === "dot" || id === "power" || id === "squareRoot" || id === "equals")
-    ) {
-      clear();
-      return;
-    }
+function setClickListenersForButtons() {
+  const digitButtons = document.querySelectorAll("#buttonsContainer > .digit")
+  const dotButton = document.querySelector("#buttonsContainer > #dot")
+  const operatorButtons = document.querySelectorAll("#buttonsContainer > .operator")
+  const equalsButton = document.querySelector("#buttonsContainer > #equals")
+  const deleteButton = document.querySelector("#buttonsContainer > #delete")
+  const clearButton = document.querySelector("#buttonsContainer > #clear")
 
-    if (isOperationActive && (id === "plus" || id === "minus" || id === "star" || id === "backtick" || id === "power" || id === "squareRoot")) {
-      if (secondNumber === "") return;
-      calculate();
-      displayResult();
-      reArrange();
-      displayInputs(id);
-      setupInputsForCalculation(id);
-      return;
-    }
+  digitButtons.forEach(button => {
+    button.addEventListener("click", e => inputDigit(e.target.innerText))
+  })
 
-    // If displayInputs() and setupInputsForCalculation() have their places switched, the dot will not show
-    // on the display when the button is pressed
-    displayInputs(id);
-    setupInputsForCalculation(id);
-    if (id === "delete") erase();
-    if (id === "clear") clear();
-    if (id === "equals") {
-      if (parseFloat(secondNumber) === 0 && operationType === "divide") {
-        clear();
-        throw alert("You cant divide with 0 :)");
-      }
-      if ((secondNumber === "" || operationType === "") && operationType !== "squareRoot") {
-        clear();
-        return;
-      }
-      calculate();
-      displayResult();
-      reArrange();
-    }
-  });
-});
+  dotButton.addEventListener("click", e => inputDot())
+
+  operatorButtons.forEach(button => {
+    button.addEventListener("click", e => setOperation(e.target))
+  })
+
+  equalsButton.addEventListener("click", e => applyEquals())
+
+  deleteButton.addEventListener("click", e => erase())
+
+  clearButton.addEventListener("click", e => clear())
+}
+
+function resetCalculatorState() {
+  calculatorState.firstNumber = "";
+  calculatorState.secondNumber = "";
+  calculatorState.activeOperation = "";
+  calculatorState.activeOperationSymbol = "";
+  calculatorState.result = "";
+  calculatorState.isOperationActive = false;
+  calculatorState.isSameOperation = false;
+  calculatorState.isFirstCalculation = true;
+  calculatorState.isFirstButtonPress = true;
+  calculatorState.previousResult = null;
+}
+
+function inputDigit(digitText) {
+  if(isDisplayOverflowed()) {
+    return
+  }
+  updateDisplayWithDigit(digitText)
+  appendDigitToActiveOperand(digitText)
+}
+
+function updateDisplayWithDigit(digitText) {
+  if (calculatorState.isFirstButtonPress) {
+    displayBottom.innerText = "";
+    calculatorState.isFirstButtonPress = false;
+  }
+  displayBottom.innerText += digitText;
+}
+
+function appendDigitToActiveOperand(digitText) {
+  if (!calculatorState.isOperationActive) {
+    calculatorState.firstNumber += digitText;
+  } else {
+    calculatorState.secondNumber += digitText;
+  }
+}
+
+function inputDot() {
+  if(isDisplayOverflowed()) {
+    return
+  }
+
+  updateDisplayWithDot()
+  appendDotToActiveOperand()
+}
+
+function updateDisplayWithDot() {
+  if (!calculatorState.isOperationActive && calculatorState.firstNumber.split("").indexOf(".") === -1 && calculatorState.firstNumber !== "") displayBottom.innerText += ".";
+  if (calculatorState.isOperationActive && calculatorState.secondNumber.split("").indexOf(".") === -1 && calculatorState.secondNumber !== "") displayBottom.innerText += ".";
+}
+
+function appendDotToActiveOperand() {
+  if (!calculatorState.isOperationActive && calculatorState.firstNumber.split("").indexOf(".") === -1) calculatorState.firstNumber += ".";
+  if (calculatorState.isOperationActive && calculatorState.secondNumber.split("").indexOf(".") === -1) calculatorState.secondNumber += ".";
+}
+
+function setOperation(operatorButton) {
+  if(isDisplayOverflowed()) {
+    return
+  }
+
+  if(calculatorState.isFirstButtonPress) {
+    clear()
+    return
+  }
+
+  if(calculatorState.isOperationActive) {
+    if (calculatorState.secondNumber === "") {
+      return
+    } 
+    calculate()
+    displayResult()
+    reArrange()
+    updateDisplayWithOperatorSymbol(operatorButton)
+    updateActiveOperation(operatorButton)
+    return
+  }
+
+  updateDisplayWithOperatorSymbol(operatorButton)
+  updateActiveOperation(operatorButton);
+}
+
+function updateDisplayWithOperatorSymbol(operatorButton) {
+  if (calculatorState.isFirstButtonPress) {
+    displayBottom.innerText = "";
+    calculatorState.isFirstButtonPress = false;
+  }
+  if(operatorButton.id == "squareRoot") {
+    displayBottom.innerText = operatorButton.dataset.operatorSymbol + displayBottom.innerText;
+  } else {
+    displayBottom.innerText += operatorButton.dataset.operatorSymbol;
+  }
+}
+
+function applyEquals() {
+  if(isDisplayOverflowed()) {
+    return
+  }
+  if (parseFloat(calculatorState.secondNumber) === 0 && calculatorState.activeOperation === "divide") {
+    clear()
+    throw alert("You cant divide with 0 :)")
+  }
+  if ((calculatorState.secondNumber === "" || calculatorState.activeOperation === "") && calculatorState.activeOperation !== "squareRoot") {
+    clear()
+    return
+  }
+  calculate()
+  displayResult()
+  reArrange()
+}
+
+function isDisplayOverflowed() {
+  return displayBottom.innerText.length === 29
+}
 
 function calculate() {
-  if (operationType === "add") result = parseFloat(firstNumber) + parseFloat(secondNumber);
-  if (operationType === "subtract") result = parseFloat(firstNumber) - parseFloat(secondNumber);
-  if (operationType === "multiply") result = parseFloat(firstNumber) * parseFloat(secondNumber);
-  if (operationType === "divide") result = parseFloat(firstNumber) / parseFloat(secondNumber);
-  if (operationType === "power") result = Math.pow(parseFloat(firstNumber), parseFloat(secondNumber));
-  if (operationType === "squareRoot") result = Math.sqrt(parseFloat(firstNumber));
-  isFirstCalculation = false;
+  if (calculatorState.activeOperation === "add") calculatorState.result = parseFloat(calculatorState.firstNumber) + parseFloat(calculatorState.secondNumber);
+  if (calculatorState.activeOperation === "subtract") calculatorState.result = parseFloat(calculatorState.firstNumber) - parseFloat(calculatorState.secondNumber);
+  if (calculatorState.activeOperation === "multiply") calculatorState.result = parseFloat(calculatorState.firstNumber) * parseFloat(calculatorState.secondNumber);
+  if (calculatorState.activeOperation=== "divide") calculatorState.result = parseFloat(calculatorState.firstNumber) / parseFloat(calculatorState.secondNumberr);
+  if (calculatorState.activeOperation === "power") calculatorState.result = Math.pow(parseFloat(calculatorState.firstNumber), parseFloat(calculatorState.secondNumber));
+  if (calculatorState.activeOperation === "squareRoot") calculatorState.result = Math.sqrt(parseFloat(calculatorState.firstNumber));
+  calculatorState.isFirstCalculation = false;
 }
 
 function displayResult() {
-  if (isSameOperation) {
-    if (operationType === "add") displayTop.innerText = `${previousResult}+${secondNumber}`;
-    if (operationType === "subtract") displayTop.innerText = `${previousResult}-${secondNumber}`;
-    if (operationType === "multiply") displayTop.innerText = `${previousResult}*${secondNumber}`;
-    if (operationType === "divide") displayTop.innerText = `${previousResult}/${secondNumber}`;
-    if (operationType === "power") displayTop.innerText = `${previousResult}^${secondNumber}`;
-    if (operationType === "squareRoot") displayTop.innerText = `\u221a${previousResult}`;
-  } else if (isFirstCalculation) {
+  if (calculatorState.isSameOperation) {
+    setTopDisplay(calculatorState.previousResult, calculatorState.secondNumber)
+  } else if (calculatorState.isFirstCalculation) {
     displayTop.innerText = displayBottom.innerText;
   } else {
-    if (operationType === "add") displayTop.innerText = `${firstNumber}+${secondNumber}`;
-    if (operationType === "subtract") displayTop.innerText = `${firstNumber}-${secondNumber}`;
-    if (operationType === "multiply") displayTop.innerText = `${firstNumber}*${secondNumber}`;
-    if (operationType === "divide") displayTop.innerText = `${firstNumber}/${secondNumber}`;
-    if (operationType === "power") displayTop.innerText = `${firstNumber}^${secondNumber}`;
-    if (operationType === "squareRoot") displayTop.innerText = `\u221a${firstNumber}`;
+    setTopDisplay(calculatorState.firstNumber, calculatorState.secondNumber)
   }
-  displayBottom.innerText = `${result}`;
+  displayBottom.innerText = `${calculatorState.result}`;
 }
 
-function setupInputsForCalculation(id) {
-  if (id === "one") {
-    if (!isOperationActive) firstNumber += "1";
-    if (isOperationActive) secondNumber += "1";
-  }
-  if (id === "two") {
-    if (!isOperationActive) firstNumber += "2";
-    if (isOperationActive) secondNumber += "2";
-  }
-  if (id === "three") {
-    if (!isOperationActive) firstNumber += "3";
-    if (isOperationActive) secondNumber += "3";
-  }
-  if (id === "four") {
-    if (!isOperationActive) firstNumber += "4";
-    if (isOperationActive) secondNumber += "4";
-  }
-  if (id === "five") {
-    if (!isOperationActive) firstNumber += "5";
-    if (isOperationActive) secondNumber += "5";
-  }
-  if (id === "six") {
-    if (!isOperationActive) firstNumber += "6";
-    if (isOperationActive) secondNumber += "6";
-  }
-  if (id === "seven") {
-    if (!isOperationActive) firstNumber += "7";
-    if (isOperationActive) secondNumber += "7";
-  }
-  if (id === "eight") {
-    if (!isOperationActive) firstNumber += "8";
-    if (isOperationActive) secondNumber += "8";
-  }
-  if (id === "nine") {
-    if (!isOperationActive) firstNumber += "9";
-    if (isOperationActive) secondNumber += "9";
-  }
-  if (id === "zero") {
-    if (!isOperationActive) firstNumber += "0";
-    if (isOperationActive) secondNumber += "0";
-  }
-  if (id === "dot") {
-    if (!isOperationActive && firstNumber.split("").indexOf(".") === -1) firstNumber += ".";
-    if (isOperationActive && secondNumber.split("").indexOf(".") === -1) secondNumber += ".";
-  }
-  if (id === "plus") {
-    operationType = "add";
-    isOperationActive = true;
-    isSameOperation = false;
-    secondNumber = "";
-  }
-  if (id === "minus") {
-    operationType = "subtract";
-    isOperationActive = true;
-    isSameOperation = false;
-    secondNumber = "";
-  }
-  if (id === "star") {
-    operationType = "multiply";
-    isOperationActive = true;
-    isSameOperation = false;
-    secondNumber = "";
-  }
-  if (id === "backtick") {
-    operationType = "divide";
-    isOperationActive = true;
-    isSameOperation = false;
-    secondNumber = "";
-  }
-  if (id === "power") {
-    operationType = "power";
-    isOperationActive = true;
-    isSameOperation = false;
-    secondNumber = "";
-  }
-  if (id === "squareRoot") {
-    operationType = "squareRoot";
-    isOperationActive = true;
-    isSameOperation = false;
-    secondNumber = "";
+function setTopDisplay(firstNumber, secondNumber) {
+  if(calculate.activeOperation === "squareRoot") {
+    displayTop.innerText = `${calculatorState.activeOperationSymbol}${firstNumber}`;
+  } else {
+    displayTop.innerText = `${firstNumber}${calculatorState.activeOperationSymbol}${secondNumber}`;
   }
 }
 
-function displayInputs(id) {
-  switch (id) {
-    case "one":
-      if (isFirstButtonPress) {
-        displayBottom.innerText = "";
-        isFirstButtonPress = false;
-      }
-      displayBottom.innerText += "1";
-      break;
-    case "two":
-      if (isFirstButtonPress) {
-        displayBottom.innerText = "";
-        isFirstButtonPress = false;
-      }
-      displayBottom.innerText += "2";
-      break;
-    case "three":
-      if (isFirstButtonPress) {
-        displayBottom.innerText = "";
-        isFirstButtonPress = false;
-      }
-      displayBottom.innerText += "3";
-      break;
-    case "four":
-      if (isFirstButtonPress) {
-        displayBottom.innerText = "";
-        isFirstButtonPress = false;
-      }
-      displayBottom.innerText += "4";
-      break;
-    case "five":
-      if (isFirstButtonPress) {
-        displayBottom.innerText = "";
-        isFirstButtonPress = false;
-      }
-      displayBottom.innerText += "5";
-      break;
-    case "six":
-      if (isFirstButtonPress) {
-        displayBottom.innerText = "";
-        isFirstButtonPress = false;
-      }
-      displayBottom.innerText += "6";
-      break;
-    case "seven":
-      if (isFirstButtonPress) {
-        displayBottom.innerText = "";
-        isFirstButtonPress = false;
-      }
-      displayBottom.innerText += "7";
-      break;
-    case "eight":
-      if (isFirstButtonPress) {
-        displayBottom.innerText = "";
-        isFirstButtonPress = false;
-      }
-      displayBottom.innerText += "8";
-      break;
-    case "nine":
-      if (isFirstButtonPress) {
-        displayBottom.innerText = "";
-        isFirstButtonPress = false;
-      }
-      displayBottom.innerText += "9";
-      break;
-    case "zero":
-      if (isFirstButtonPress) {
-        displayBottom.innerText = "";
-        isFirstButtonPress = false;
-      }
-      displayBottom.innerText += "0";
-      break;
-    case "plus":
-      if (isFirstButtonPress) {
-        displayBottom.innerText = "";
-        isFirstButtonPress = false;
-      }
-      displayBottom.innerText += "+";
-      break;
-    case "minus":
-      if (isFirstButtonPress) {
-        displayBottom.innerText = "";
-        isFirstButtonPress = false;
-      }
-      displayBottom.innerText += "-";
-      break;
-    case "star":
-      if (isFirstButtonPress) {
-        displayBottom.innerText = "";
-        isFirstButtonPress = false;
-      }
-      displayBottom.innerText += "*";
-      break;
-    case "backtick":
-      if (isFirstButtonPress) {
-        displayBottom.innerText = "";
-        isFirstButtonPress = false;
-      }
-      displayBottom.innerText += "/";
-      break;
-    case "power":
-      if (isFirstButtonPress) {
-        displayBottom.innerText = "";
-        isFirstButtonPress = false;
-      }
-      displayBottom.innerText += "^";
-      break;
-    case "squareRoot":
-      if (isFirstButtonPress) {
-        displayBottom.innerText = "";
-        isFirstButtonPress = false;
-      }
-      displayBottom.innerText = "\u221a" + displayBottom.innerText;
-      break;
-    case "dot":
-      if (!isOperationActive && firstNumber.split("").indexOf(".") === -1 && firstNumber !== "") displayBottom.innerText += ".";
-      if (isOperationActive && secondNumber.split("").indexOf(".") === -1 && secondNumber !== "") displayBottom.innerText += ".";
-      break;
-
-    default:
-      break;
-  }
+function updateActiveOperation(operatorButton) {
+  calculatorState.activeOperation = operatorButton.id
+  calculatorState.activeOperationSymbol = operatorButton.dataset.operatorSymbol
+  calculatorState.isOperationActive = true;
+  calculatorState.isSameOperation = false;
+  calculatorState.secondNumber = "";
 }
 
 function clear() {
-  displayTop.innerText = "";
-  displayBottom.innerText = "";
+  clearDisplay()
+  resetCalculatorState()
+}
 
-  firstNumber = "";
-  secondNumber = "";
-  operationType = "";
-  isOperationActive = false;
-  isSameOperation = false;
-  isFirstCalculation = true;
-  isFirstButtonPress = true;
-  result = null;
-  previousResult = null;
+function clearDisplay() {
+  displayTop.innerText = ""
+  displayBottom.innerText = ""
 }
 
 function erase() {
-  if (displayBottom.innerText.split("").indexOf("\u221a") !== -1) {
+  if (displayBottom.innerText.split("").indexOf(squareRootSymbol) !== -1) {
     // If deleting square root operator
     let temp = displayBottom.innerText.split("");
     temp.splice(0, 1);
     displayBottom.innerText = temp.join("");
-    operationType = "";
-    isOperationActive = false;
+    calculatorState.activeOperation = "";
+    calculatorState.isOperationActive = false;
     return;
   } else {
     // Default if its any other operation other than sqrt
     displayBottom.innerText = displayBottom.innerText.slice(0, displayBottom.innerText.length - 1);
   }
 
-  if (result !== null && result !== "") {
+  if (calculatorState.result !== null && calculatorState.result !== "") {
     // If deleting on the result after the calculation
-    let arr = result.split("");
+    let arr = calculatorState.result.split("");
     arr.pop();
-    result = arr.join("");
+    calculatorState.result = arr.join("");
     reArrange();
-  } else if (!isOperationActive && firstNumber !== "") {
+  } else if (!calculatorState.isOperationActive && calculatorState.firstNumber !== "") {
     // If deleting on the first number
-    let arr = firstNumber.split("");
+    let arr = calculatorState.firstNumber.split("");
     arr.pop();
-    firstNumber = arr.join("");
-  } else if (isOperationActive && secondNumber !== "") {
+    calculatorState.firstNumber = arr.join("");
+  } else if (calculatorState.isOperationActive && calculatorState.secondNumber !== "") {
     // If deleting on the second number
-    let arr = secondNumber.split("");
+    let arr = calculatorState.secondNumber.split("");
     arr.pop();
-    secondNumber = arr.join("");
-  } else if (isOperationActive && secondNumber === "") {
+    calculatorState.secondNumber = arr.join("");
+  } else if (calculatorState.isOperationActive && calculatorState.secondNumber === "") {
     // If deleting on the operator.
-    operationType = "";
-    isOperationActive = false;
+    calculatorState.activeOperation = "";
+    calculatorState.isOperationActive = false;
   }
 }
 
 function reArrange() {
-  result = result.toString();
-  firstNumber = result;
-  previousResult = result;
-  isSameOperation = true;
-  isOperationActive = false;
+  calculatorState.result = calculatorState.result.toString();
+  calculatorState.firstNumber = calculatorState.result;
+  calculatorState.previousResult = calculatorState.result;
+  calculatorState.isSameOperation = true;
+  calculatorState.isOperationActive = false;
 }
