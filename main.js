@@ -1,7 +1,7 @@
 const squareRootSymbol = "\u221a"
 
 const displayTop = document.querySelector("#displayTop");
-const displayBottom = document.querySelector("#displayBot");
+const displayBottom = document.querySelector("#displayBottom");
 
 const calculatorState = {
   firstNumber: "",
