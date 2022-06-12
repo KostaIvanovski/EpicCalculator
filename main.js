@@ -1,3 +1,5 @@
+const squareRootSymbol = "\u221a"
+
 const displayTop = document.querySelector("#displayTop");
 const displayBottom = document.querySelector("#displayBot");
 
@@ -54,7 +56,7 @@ function resetCalculatorState() {
 }
 
 function inputDigit(digitText) {
-  if(displayIsOverflowed()) {
+  if(isDisplayOverflowed()) {
     return
   }
   updateDisplayWithDigit(digitText)
@@ -78,7 +80,7 @@ function appendDigitToActiveOperand(digitText) {
 }
 
 function inputDot() {
-  if(displayIsOverflowed()) {
+  if(isDisplayOverflowed()) {
     return
   }
 
@@ -97,7 +99,7 @@ function appendDotToActiveOperand() {
 }
 
 function setOperation(operatorButton) {
-  if(displayIsOverflowed()) {
+  if(isDisplayOverflowed()) {
     return
   }
 
@@ -128,14 +130,14 @@ function updateDisplayWithOperatorSymbol(operatorButton) {
     calculatorState.isFirstButtonPress = false;
   }
   if(operatorButton.id == "squareRoot") {
-    displayBottom.innerText = "\u221a" + displayBottom.innerText;
+    displayBottom.innerText = operatorButton.dataset.operatorSymbol + displayBottom.innerText;
   } else {
     displayBottom.innerText += operatorButton.dataset.operatorSymbol;
   }
 }
 
 function applyEquals() {
-  if(displayIsOverflowed()) {
+  if(isDisplayOverflowed()) {
     return
   }
   if (parseFloat(calculatorState.secondNumber) === 0 && calculatorState.activeOperation === "divide") {
@@ -151,7 +153,7 @@ function applyEquals() {
   reArrange()
 }
 
-function displayIsOverflowed() {
+function isDisplayOverflowed() {
   return displayBottom.innerText.length === 29
 }
 
@@ -182,7 +184,7 @@ function setTopDisplay(firstNumber, secondNumber) {
   if (calculatorState.activeOperation === "multiply") displayTop.innerText = `${firstNumber}*${secondNumber}`;
   if (calculatorState.activeOperation === "divide") displayTop.innerText = `${firstNumber}/${secondNumber}`;
   if (calculatorState.activeOperation === "power") displayTop.innerText = `${firstNumber}^${secondNumber}`;
-  if (calculatorState.activeOperation === "squareRoot") displayTop.innerText = `\u221a${firstNumber}`;
+  if (calculatorState.activeOperation === "squareRoot") displayTop.innerText = `${squareRootSymbol}${firstNumber}`;
 }
 
 function updateActiveOperation(operationText) {
@@ -199,7 +201,7 @@ function clear() {
 }
 
 function erase() {
-  if (displayBottom.innerText.split("").indexOf("\u221a") !== -1) {
+  if (displayBottom.innerText.split("").indexOf(squareRootSymbol) !== -1) {
     // If deleting square root operator
     let temp = displayBottom.innerText.split("");
     temp.splice(0, 1);
